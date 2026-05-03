@@ -1,0 +1,93 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VSCode
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+/pub/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android specific (build outputs only, keep android/ folder structure)
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+/android/app/*.apk
+/android/app/*.apk.sha1
+/android/app/*.appbundle
+/android/.gradle/
+/android/app/build/
+/build/
+
+# iOS specific (build outputs only, keep ios/ folder structure)
+/ios/*.pbxuser
+/ios/*.mode1v3
+/ios/*.mode2v3
+/ios/*.perspectivev3
+/ios/xcuserdata/
+/ios/*.xccheckout
+/ios/*.moved-aside
+/ios/!default.xcworkspace
+/ios/!Podfile.lock
+/ios/Pods/
+/ios/DerivedData/
+/ios/DerivedData/
+/ios/Flutter/Flutter.podspec
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/App.framework/
+/ios/Flutter/Flutter.framework/
+/ios/Flutter/Debug-iphoneos/
+/ios/Flutter/Release-iphoneos/
+/ios/build/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+[Desktop.ini]
+
+# Flutter desktop builds
+/windows/build/
+/linux/build/
+/macos/build/
+
+# Test coverage
+/coverage/
+*.lcov
+
+# Firebase (if added later)
+/firebase.json
+/.firebase/
+
+# Keep pubspec.lock - it should be committed for Flutter projects
+# /pubspec.lock
