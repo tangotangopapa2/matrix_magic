@@ -20,6 +20,15 @@ class Matrix2x2 {
     );
   }
 
+  Matrix2x2 operator *(Matrix2x2 other) {
+    return Matrix2x2(
+      topLeft: topLeft * other.topLeft + topRight * other.bottomLeft,
+      topRight: topLeft * other.topRight + topRight * other.bottomRight,
+      bottomLeft: bottomLeft * other.topLeft + bottomRight * other.bottomLeft,
+      bottomRight: bottomLeft * other.topRight + bottomRight * other.bottomRight,
+    );
+  }
+
   List<int> toList() => [topLeft, topRight, bottomLeft, bottomRight];
 
   int determinant() {

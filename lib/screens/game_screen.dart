@@ -40,7 +40,10 @@ class _GameScreenState extends State<GameScreen> {
       widget.gameType == GameType.addNumbers ||
       widget.gameType == GameType.determinant;
 
-  bool get _isMatrixInputGame => widget.gameType == GameType.addMatrices;
+  bool get _isMatrixInputGame =>
+      widget.gameType == GameType.addMatrices ||
+      widget.gameType == GameType.multiplyMatrices ||
+      widget.gameType == GameType.squareMatrix;
 
   @override
   void initState() {
