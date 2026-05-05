@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'game_interface.dart';
 import '../models/game_type.dart';
 import '../models/matrix2x2.dart';
+import '../utils/constants.dart';
+import '../widgets/matrix_display.dart';
 
 class AddMatricesGame implements MathGame {
   late Matrix2x2 _matrix1;
@@ -21,19 +23,18 @@ class AddMatricesGame implements MathGame {
   @override
   void generateQuestion() {
     final random = Random();
-    _matrix1 = Matrix2x2(
-      topLeft: random.nextInt(21) - 10,
-      topRight: random.nextInt(21) - 10,
-      bottomLeft: random.nextInt(21) - 10,
-      bottomRight: random.nextInt(21) - 10,
-    );
-    _matrix2 = Matrix2x2(
-      topLeft: random.nextInt(21) - 10,
-      topRight: random.nextInt(21) - 10,
-      bottomLeft: random.nextInt(21) - 10,
-      bottomRight: random.nextInt(21) - 10,
-    );
+    _matrix1 = _generateRandomMatrix(random);
+    _matrix2 = _generateRandomMatrix(random);
     _correctAnswer = _matrix1 + _matrix2;
+  }
+
+  Matrix2x2 _generateRandomMatrix(Random random) {
+    return Matrix2x2(
+      topLeft: random.nextInt(matrixRandomRange) - matrixValueOffset,
+      topRight: random.nextInt(matrixRandomRange) - matrixValueOffset,
+      bottomLeft: random.nextInt(matrixRandomRange) - matrixValueOffset,
+      bottomRight: random.nextInt(matrixRandomRange) - matrixValueOffset,
+    );
   }
 
   @override
@@ -61,9 +62,13 @@ class AddMatricesGame implements MathGame {
     required VoidCallback onSubmit,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final matrixSpacing = screenWidth < 350 ? 4.0 : 8.0;
-    final operatorSize = screenWidth < 350 ? 20.0 : 32.0;
-    
+    final matrixSpacing = screenWidth < smallScreenBreakpoint
+        ? matrixCellSpacingSmall
+        : matrixCellSpacing;
+    final operatorSize = screenWidth < smallScreenBreakpoint
+        ? 20.0
+        : 32.0;
+
     return Column(
       children: [
         SingleChildScrollView(
@@ -71,84 +76,21 @@ class AddMatricesGame implements MathGame {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _buildMatrixDisplay(_matrix1, screenWidth),
+              MatrixDisplay(matrix: _matrix1),
               SizedBox(width: matrixSpacing),
-              Text(' + ', style: TextStyle(fontSize: operatorSize, fontWeight: FontWeight.bold)),
+              Text(' + ',
+                  style: TextStyle(
+                      fontSize: operatorSize, fontWeight: FontWeight.bold)),
               SizedBox(width: matrixSpacing),
-              _buildMatrixDisplay(_matrix2, screenWidth),
+              MatrixDisplay(matrix: _matrix2),
               SizedBox(width: matrixSpacing),
-              Text(' = ?', style: TextStyle(fontSize: operatorSize, fontWeight: FontWeight.bold)),
+              Text(' = ?',
+                  style: TextStyle(
+                      fontSize: operatorSize, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildMatrixDisplay(Matrix2x2 matrix, double screenWidth) {
-    final bracketSize = screenWidth < 350 ? 28.0 : 36.0;
-    final cellWidth = screenWidth < 350 ? 40.0 : 50.0;
-    final cellPadding = screenWidth < 350 ? 6.0 : 8.0;
-    final fontSize = screenWidth < 350 ? 16.0 : 20.0;
-    final cellSpacing = screenWidth < 350 ? 4.0 : 8.0;
-    final rowSpacing = screenWidth < 350 ? 2.0 : 4.0;
-    
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: cellPadding, vertical: cellPadding),
-      decoration: BoxDecoration(
-        color: Colors.grey[100],
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.grey[300]!, width: 2),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('[',
-              style: TextStyle(fontSize: bracketSize, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
-          SizedBox(width: cellSpacing),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildCell(matrix.topLeft, cellWidth, fontSize),
-                  SizedBox(width: cellSpacing),
-                  _buildCell(matrix.topRight, cellWidth, fontSize),
-                ],
-              ),
-              SizedBox(height: rowSpacing),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildCell(matrix.bottomLeft, cellWidth, fontSize),
-                  SizedBox(width: cellSpacing),
-                  _buildCell(matrix.bottomRight, cellWidth, fontSize),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(width: cellSpacing),
-          Text(']',
-              style: TextStyle(fontSize: bracketSize, fontWeight: FontWeight.bold, color: Colors.deepPurple)),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildCell(int value, double width, double fontSize) {
-    return Container(
-      width: width,
-      padding: EdgeInsets.symmetric(vertical: fontSize * 0.4),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: Colors.grey[400]!),
-      ),
-      child: Center(
-        child: Text('$value',
-            style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
-      ),
     );
   }
 

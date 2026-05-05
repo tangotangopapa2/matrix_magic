@@ -6,6 +6,7 @@ import '../models/game_type.dart';
 import '../models/game_mode.dart';
 import '../models/high_score.dart';
 import '../services/high_score_service.dart';
+import '../utils/constants.dart';
 import '../widgets/custom_keyboard.dart';
 import '../widgets/number_input.dart';
 import '../widgets/matrix_input.dart';
@@ -32,8 +33,14 @@ class _GameScreenState extends State<GameScreen> {
   int _score = 0;
   int _questionCount = 0;
   Timer? _timer;
-  int _timeLeft = 30; // 30 seconds for speed mode
+  int _timeLeft = speedModeDurationSeconds;
   bool _gameFinished = false;
+
+  bool get _isNumberInputGame =>
+      widget.gameType == GameType.addNumbers ||
+      widget.gameType == GameType.determinant;
+
+  bool get _isMatrixInputGame => widget.gameType == GameType.addMatrices;
 
   @override
   void initState() {
@@ -48,7 +55,7 @@ class _GameScreenState extends State<GameScreen> {
   void _startNewQuestion() {
     _game.generateQuestion();
     setState(() {
-      if (widget.gameType == GameType.addMatrices) {
+      if (_isMatrixInputGame) {
         _currentInput = ['0', '0', '0', '0'];
       } else {
         _currentInput = '';
@@ -70,7 +77,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _handleKeyPressed(String key) {
-    if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
+    if (_isNumberInputGame) {
       setState(() {
         if (key == '-') {
           if (_currentInput.isEmpty) {
@@ -84,7 +91,7 @@ class _GameScreenState extends State<GameScreen> {
           _currentInput = _currentInput + key;
         }
       });
-    } else if (widget.gameType == GameType.addMatrices) {
+    } else if (_isMatrixInputGame) {
       setState(() {
         final newValues = List<String>.from(_currentInput);
         final currentVal = newValues[_selectedMatrixPosition];
@@ -123,9 +130,9 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handleClearPressed() {
     setState(() {
-      if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
+      if (_isNumberInputGame) {
         _currentInput = '';
-      } else if (widget.gameType == GameType.addMatrices) {
+      } else if (_isMatrixInputGame) {
         final newValues = List<String>.from(_currentInput);
         newValues[_selectedMatrixPosition] = '0';
         _currentInput = newValues;
@@ -135,9 +142,9 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handleEnterPressed() {
     bool isCorrect = false;
-    if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
+    if (_isNumberInputGame) {
       isCorrect = _game.checkAnswer(int.tryParse(_currentInput) ?? 0);
-    } else if (widget.gameType == GameType.addMatrices) {
+    } else if (_isMatrixInputGame) {
       final matrix = Matrix2x2(
         topLeft: int.tryParse(_currentInput[0]) ?? 0,
         topRight: int.tryParse(_currentInput[1]) ?? 0,
@@ -152,7 +159,7 @@ class _GameScreenState extends State<GameScreen> {
       _questionCount++;
     });
 
-    if ((widget.gameMode == GameMode.accuracy && _questionCount >= 10) ||
+    if ((widget.gameMode == GameMode.accuracy && _questionCount >= accuracyModeQuestionCount) ||
         (widget.gameMode == GameMode.speed && _timeLeft <= 0)) {
       _handleGameFinish();
     } else {
@@ -215,7 +222,7 @@ class _GameScreenState extends State<GameScreen> {
         HighScore(
           name: name,
           score: _score,
-          timeInSeconds: 30 - _timeLeft,
+          timeInSeconds: speedModeDurationSeconds - _timeLeft,
           gameType: widget.gameType.name,
         ),
       );
@@ -251,7 +258,7 @@ class _GameScreenState extends State<GameScreen> {
               onSubmit: _handleEnterPressed,
             ),
           ),
-          if (widget.gameType == GameType.addMatrices)
+          if (_isMatrixInputGame)
             MatrixInput(
               values: _currentInput,
               selectedPosition: _selectedMatrixPosition,
@@ -279,7 +286,7 @@ class _GameScreenState extends State<GameScreen> {
           if (widget.gameMode == GameMode.speed)
             Text('Time: $_timeLeft', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold))
           else
-            Text('Question: $_questionCount/10', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            Text('Question: $_questionCount/$accuracyModeQuestionCount', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -295,7 +302,7 @@ class _GameScreenState extends State<GameScreen> {
             const SizedBox(height: 20),
             Text('Score: $_score', style: const TextStyle(fontSize: 48, fontWeight: FontWeight.bold)),
             if (widget.gameMode == GameMode.accuracy)
-              Text('Out of 10', style: const TextStyle(fontSize: 24)),
+              Text('Out of $accuracyModeQuestionCount', style: const TextStyle(fontSize: 24)),
             const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),

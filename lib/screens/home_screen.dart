@@ -97,19 +97,6 @@ class HomeScreen extends StatelessWidget {
                 ),
                 child: const Text('High Scores'),
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: () {
-                  // Settings screen can be added later
-                },
-                child: const Text(
-                  'Settings',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.white70,
-                  ),
-                ),
-              ),
             ],
           ),
         ),

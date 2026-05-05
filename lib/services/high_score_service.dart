@@ -1,10 +1,11 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../models/high_score.dart';
+import '../utils/constants.dart';
 
 class HighScoreService {
   static const String _keyPrefix = 'high_scores_';
-  static const int maxScores = 10;
+  static const int maxScores = maxHighScores;
 
   Future<List<HighScore>> getHighScores(String gameType) async {
     final prefs = await SharedPreferences.getInstance();
