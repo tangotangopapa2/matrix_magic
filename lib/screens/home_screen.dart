@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'game_selection_screen.dart';
+import 'high_scores_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -69,6 +70,32 @@ class HomeScreen extends StatelessWidget {
                   ),
                 ),
                 child: const Text('Start Playing'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => const HighScoresScreen(),
+                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 60,
+                    vertical: 16,
+                  ),
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.deepPurple,
+                  textStyle: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text('High Scores'),
               ),
               const SizedBox(height: 20),
               TextButton(

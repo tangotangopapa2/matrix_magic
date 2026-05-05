@@ -4,6 +4,8 @@ import '../games/game_interface.dart';
 import '../games/game_factory.dart';
 import '../models/game_type.dart';
 import '../models/game_mode.dart';
+import '../models/high_score.dart';
+import '../services/high_score_service.dart';
 import '../widgets/custom_keyboard.dart';
 import '../widgets/number_input.dart';
 import '../widgets/matrix_input.dart';
@@ -30,7 +32,7 @@ class _GameScreenState extends State<GameScreen> {
   int _score = 0;
   int _questionCount = 0;
   Timer? _timer;
-  int _timeLeft = 120; // 2 minutes for speed mode
+  int _timeLeft = 30; // 30 seconds for speed mode
   bool _gameFinished = false;
 
   @override
@@ -58,8 +60,8 @@ class _GameScreenState extends State<GameScreen> {
       setState(() {
         _timeLeft--;
         if (_timeLeft <= 0) {
-          _gameFinished = true;
           _timer?.cancel();
+          _handleGameFinish();
         }
       });
     });
@@ -148,10 +150,73 @@ class _GameScreenState extends State<GameScreen> {
       _questionCount++;
     });
 
-    if (widget.gameMode == GameMode.accuracy && _questionCount >= 10) {
-      setState(() => _gameFinished = true);
+    if ((widget.gameMode == GameMode.accuracy && _questionCount >= 10) ||
+        (widget.gameMode == GameMode.speed && _timeLeft <= 0)) {
+      _handleGameFinish();
     } else {
       _startNewQuestion();
+    }
+  }
+
+  Future<void> _handleGameFinish() async {
+    if (widget.gameMode == GameMode.speed) {
+      await _checkHighScore();
+    }
+    setState(() {
+      _gameFinished = true;
+    });
+  }
+
+  Future<void> _checkHighScore() async {
+    if (widget.gameMode != GameMode.speed) return;
+    
+    final service = HighScoreService();
+    final isHigh = await service.isHighScore(widget.gameType.name, _score);
+    
+    if (isHigh && mounted) {
+      await _showNameEntryDialog();
+    }
+  }
+
+  Future<void> _showNameEntryDialog() async {
+    final controller = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Text('New High Score!'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(
+            labelText: 'Enter your name',
+            hintText: 'Leave empty for "-"',
+          ),
+          maxLength: 20,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop('-'),
+            child: const Text('No Name'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.isEmpty ? '-' : controller.text),
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+    
+    if (name != null) {
+      final service = HighScoreService();
+      await service.saveHighScore(
+        widget.gameType.name,
+        HighScore(
+          name: name,
+          score: _score,
+          timeInSeconds: 30 - _timeLeft,
+          gameType: widget.gameType.name,
+        ),
+      );
     }
   }
 
