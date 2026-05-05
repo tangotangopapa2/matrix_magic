@@ -65,7 +65,7 @@ class GameSelectionScreen extends StatelessWidget {
                   child: _buildModeButton(
                     context,
                     'Speed Mode',
-                    '2 minutes',
+                    '30 seconds',
                     GameMode.speed,
                     gameType,
                     Colors.green,

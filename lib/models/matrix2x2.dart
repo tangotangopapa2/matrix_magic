@@ -22,6 +22,10 @@ class Matrix2x2 {
 
   List<int> toList() => [topLeft, topRight, bottomLeft, bottomRight];
 
+  int determinant() {
+    return (topLeft * bottomRight) - (topRight * bottomLeft);
+  }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

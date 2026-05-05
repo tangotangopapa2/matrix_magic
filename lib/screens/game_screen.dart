@@ -48,9 +48,11 @@ class _GameScreenState extends State<GameScreen> {
   void _startNewQuestion() {
     _game.generateQuestion();
     setState(() {
-      _currentInput = widget.gameType == GameType.addMatrices
-          ? ['0', '0', '0', '0']
-          : '';
+      if (widget.gameType == GameType.addMatrices) {
+        _currentInput = ['0', '0', '0', '0'];
+      } else {
+        _currentInput = '';
+      }
       _selectedMatrixPosition = 0;
     });
   }
@@ -68,7 +70,7 @@ class _GameScreenState extends State<GameScreen> {
   }
 
   void _handleKeyPressed(String key) {
-    if (widget.gameType == GameType.addNumbers) {
+    if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
       setState(() {
         if (key == '-') {
           if (_currentInput.isEmpty) {
@@ -121,7 +123,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handleClearPressed() {
     setState(() {
-      if (widget.gameType == GameType.addNumbers) {
+      if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
         _currentInput = '';
       } else if (widget.gameType == GameType.addMatrices) {
         final newValues = List<String>.from(_currentInput);
@@ -133,7 +135,7 @@ class _GameScreenState extends State<GameScreen> {
 
   void _handleEnterPressed() {
     bool isCorrect = false;
-    if (widget.gameType == GameType.addNumbers) {
+    if (widget.gameType == GameType.addNumbers || widget.gameType == GameType.determinant) {
       isCorrect = _game.checkAnswer(int.tryParse(_currentInput) ?? 0);
     } else if (widget.gameType == GameType.addMatrices) {
       final matrix = Matrix2x2(
