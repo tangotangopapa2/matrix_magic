@@ -45,6 +45,8 @@ app.*.map.json
 /android/app/*.appbundle
 /android/.gradle/
 /android/app/build/
+/android/app/upload-keystore.jks
+/android/key.properties
 /build/
 
 # iOS specific (build outputs only, keep ios/ folder structure)
